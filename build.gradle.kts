@@ -26,14 +26,18 @@ version = scmVersion.version
 
 repositories {
     mavenCentral()
+    maven {
+        url = uri("https://oss.sonatype.org/content/repositories/snapshots/")
+    }
 }
 
 dependencies {
     implementation(libs.bundles.flatlaf)
-    implementation(libs.darklaf)
+    //    implementation(libs.darklaf)
+    implementation("com.github.weisj:darklaf-platform-preferences:latest.integration")
     implementation(libs.flightrecorder)
 
-//    implementation(libs.graal.sdk)
+    //    implementation(libs.graal.sdk)
     implementation(libs.bundles.graal.js)
 
     testImplementation(libs.junit.jupiter.api)

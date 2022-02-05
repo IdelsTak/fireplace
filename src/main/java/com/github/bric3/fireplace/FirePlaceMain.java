@@ -19,8 +19,7 @@ import com.github.bric3.fireplace.ui.JScrollPaneWithButton;
 import com.github.bric3.fireplace.ui.debug.AssertiveRepaintManager;
 import com.github.bric3.fireplace.ui.debug.CheckThreadViolationRepaintManager;
 import com.github.bric3.fireplace.ui.debug.EventDispatchThreadHangMonitor;
-import com.github.weisj.darklaf.LafManager;
-import com.github.weisj.darklaf.platform.ThemePreferencesHandler;
+import com.github.weisj.darklaf.platform.preferences.SystemPreferencesManager;
 import org.openjdk.jmc.common.item.IItem;
 import org.openjdk.jmc.common.item.IItemCollection;
 import org.openjdk.jmc.common.item.IItemIterable;
@@ -204,12 +203,30 @@ public class FirePlaceMain {
             //   - "system": use current macOS appearance (light or dark)
             //   - "NSAppearanceNameAqua": use light appearance
             //   - "NSAppearanceNameDarkAqua": use dark appearance
-//            System.setProperty("apple.awt.application.appearance", "NSAppearanceNameDarkAqua");
+            // System.setProperty("apple.awt.application.appearance", "NSAppearanceNameDarkAqua");
             System.setProperty("apple.awt.application.appearance", "system");
         }
-        ThemePreferencesHandler.getSharedInstance().enablePreferenceChangeReporting(true);
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> ThemePreferencesHandler.getSharedInstance().enablePreferenceChangeReporting(false)));
-        switch (LafManager.getPreferredThemeStyle().getColorToneRule()) {
+
+        SystemPreferencesManager manager = new SystemPreferencesManager();
+        manager.addListener(style -> {
+            SwingUtilities.invokeLater(() -> {
+                System.out.println(">>>> theme preference changed = " + style.getColorToneRule());
+                switch (style.getColorToneRule()) {
+                    case DARK:
+                        FlatDarculaLaf.setup();
+                        Colors.setDarkMode(true);
+                        break;
+                    case LIGHT:
+                        FlatIntelliJLaf.setup();
+                        Colors.setDarkMode(false);
+                        break;
+                }
+                FlatLaf.updateUI();
+                FlatAnimatedLafChange.hideSnapshotWithAnimation();
+            });
+        });
+        manager.enableReporting(true);
+        switch (manager.getPreferredThemeStyle().getColorToneRule()) {
             case DARK:
                 FlatDarculaLaf.setup();
                 Colors.setDarkMode(true);
@@ -219,21 +236,7 @@ public class FirePlaceMain {
                 Colors.setDarkMode(false);
                 break;
         }
-        ThemePreferencesHandler.getSharedInstance().addThemePreferenceChangeListener(e -> SwingUtilities.invokeLater(() -> {
-            System.out.println(">>>> theme preference changed = " + LafManager.getPreferredThemeStyle());
-            switch (LafManager.getPreferredThemeStyle().getColorToneRule()) {
-                case DARK:
-                    FlatDarculaLaf.setup();
-                    Colors.setDarkMode(true);
-                    break;
-                case LIGHT:
-                    FlatIntelliJLaf.setup();
-                    Colors.setDarkMode(false);
-                    break;
-            }
-            FlatLaf.updateUI();
-            FlatAnimatedLafChange.hideSnapshotWithAnimation();
-        }));
+        //        Runtime.getRuntime().addShutdownHook(new Thread(() -> manager.enableReporting(false)));
     }
 
     private static void updateTabContent(JTabbedPane jTabbedPane, JTextArea nativeLibs, JTextArea sysProps, IItemCollection events) {
