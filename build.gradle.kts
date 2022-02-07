@@ -34,7 +34,7 @@ repositories {
 dependencies {
     implementation(libs.bundles.flatlaf)
     //    implementation(libs.darklaf)
-    implementation("com.github.weisj:darklaf-platform-preferences:latest.integration")
+    implementation("com.github.weisj:darklaf-platform-preferences-jnf:latest.integration")
     implementation(libs.flightrecorder)
 
     //    implementation(libs.graal.sdk)

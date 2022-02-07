@@ -100,12 +100,12 @@ public class FirePlaceMain {
             return events;
         }).join());
 
-//        otherEvents(events);
+        //        otherEvents(events);
 
 
-//        events.apply(ItemFilters.type(Set.of(
-//                "jdk.CPULoad"
-//        )));
+        //        events.apply(ItemFilters.type(Set.of(
+        //                "jdk.CPULoad"
+        //        )));
 
         setupLaF();
         if (Boolean.getBoolean("fireplace.swing.debug")) {
@@ -134,7 +134,7 @@ public class FirePlaceMain {
         jTabbedPane.addTab(ALLOCATIONS, allocationFlameGraphPanel);
         jTabbedPane.addTab(CPU, cpuFlameGraphPanel);
         jTabbedPane.setTabPlacement(JTabbedPane.BOTTOM);
-//        jTabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
+        //        jTabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
 
         jTabbedPane.addChangeListener(e -> updateTabContent(jTabbedPane, nativeLibs, sysProps, eventSupplier.get()));
 
@@ -236,6 +236,7 @@ public class FirePlaceMain {
                 Colors.setDarkMode(false);
                 break;
         }
+        //        Logger.getLogger("com.github.weisj.darklaf").setLevel(Level.INFO);
         //        Runtime.getRuntime().addShutdownHook(new Thread(() -> manager.enableReporting(false)));
     }
 
@@ -273,22 +274,22 @@ public class FirePlaceMain {
         return new StacktraceTreeModel(allocCollection,
                                        methodFrameSeparator,
                                        false
-//                                       , JdkAttributes.ALLOCATION_SIZE
+                                       //                                       , JdkAttributes.ALLOCATION_SIZE
         );
 
 
-//        allocCollection.forEach(eventsCollection -> {
-//            var stackAccessor = eventsCollection.getType().getAccessor(JfrAttributes.EVENT_STACKTRACE.getKey());
-//            eventsCollection.stream().limit(10).forEach(item -> {
-//                var stack = stackAccessor.getMember(item);
-//
-//                if (stack == null || stack.getFrames() == null) {
-//                    return;
-//                }
-//
-//
-//            });
-//        });
+        //        allocCollection.forEach(eventsCollection -> {
+        //            var stackAccessor = eventsCollection.getType().getAccessor(JfrAttributes.EVENT_STACKTRACE.getKey());
+        //            eventsCollection.stream().limit(10).forEach(item -> {
+        //                var stack = stackAccessor.getMember(item);
+        //
+        //                if (stack == null || stack.getFrames() == null) {
+        //                    return;
+        //                }
+        //
+        //
+        //            });
+        //        });
     }
 
     private static StacktraceTreeModel stackTraceCPUFun(IItemCollection events) {
@@ -301,7 +302,7 @@ public class FirePlaceMain {
         return new StacktraceTreeModel(allocCollection,
                                        methodFrameSeparator,
                                        false
-//                                      , JdkAttributes.SAMPLE_WEIGHT
+                                       //                                      , JdkAttributes.SAMPLE_WEIGHT
         );
     }
 
@@ -310,7 +311,7 @@ public class FirePlaceMain {
                 "jdk.CPUInformation",
                 "jdk.OSInformation",
                 "jdk.ActiveRecording",
-//                "jdk.ActiveSetting", // async profiler settings ?
+                //                "jdk.ActiveSetting", // async profiler settings ?
                 "jdk.JVMInformation"
         ))).forEach(eventsCollection -> {
             eventsCollection.stream().limit(10).forEach(event -> {
