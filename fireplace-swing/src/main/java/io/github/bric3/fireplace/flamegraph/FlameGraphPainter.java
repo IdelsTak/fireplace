@@ -14,6 +14,7 @@ import io.github.bric3.fireplace.core.ui.Colors;
 import java.awt.*;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -222,14 +223,14 @@ public class FlameGraphPainter<T> {
             var nowWidth = g2d.getFontMetrics().stringWidth(drawTimeMs);
             g2d.setColor(Color.DARK_GRAY);
             g2d.fillRect(visibleRect.x + visibleRect.width - nowWidth - textBorder * 2,
-                        visibleRect.y + visibleRect.height - frameBoxHeight,
-                        nowWidth + textBorder * 2,
-                        frameBoxHeight);
+                         visibleRect.y + visibleRect.height - frameBoxHeight,
+                         nowWidth + textBorder * 2,
+                         frameBoxHeight);
 
             g2d.setColor(Color.YELLOW);
             g2d.drawString(drawTimeMs,
-                          visibleRect.x + visibleRect.width - nowWidth - textBorder,
-                          visibleRect.y + visibleRect.height - textBorder);
+                           visibleRect.x + visibleRect.width - nowWidth - textBorder,
+                           visibleRect.y + visibleRect.height - textBorder);
         }
 
         g2d.dispose();
@@ -328,6 +329,17 @@ public class FlameGraphPainter<T> {
         return frameRect;
     }
 
+    public Rectangle getFrameRectangle(Graphics2D g2, FrameBox<T> frame) {
+        var frameBoxHeight = getFrameBoxHeight(g2);
+
+        var rect = new Rectangle();
+        rect.x = (int) (flameGraphWidth * frame.startX); // + internalPadding;
+        rect.width = (int) (flameGraphWidth * frame.endX) - rect.x; // - internalPadding;
+        rect.y = frameBoxHeight * frame.stackDepth;
+        rect.height = frameBoxHeight;
+        return rect;
+    }
+
     public Optional<FrameBox<T>> getFrameAt(Graphics2D g2, Point point) {
         int depth = point.y / getFrameBoxHeight(g2);
         double xLocation = ((double) point.x) / flameGraphWidth;
@@ -337,21 +349,28 @@ public class FlameGraphPainter<T> {
                      .findFirst();
     }
 
-    public void toggleSelectedFrameAt(Graphics2D g2, Point point) {
+    public void toggleSelectedFrameAt(Graphics2D g2, Point point, BiConsumer<FrameBox<T>, Rectangle> toggleConsumer) {
         getFrameAt(
                 g2,
                 point
-        ).ifPresent(frame -> selectedFrame = selectedFrame == frame ? null : frame);
+        ).ifPresent(frame -> {
+            selectedFrame = selectedFrame == frame ? null : frame;
+            toggleConsumer.accept(frame, getFrameRectangle(g2, frame));
+        });
     }
 
-    public void hoverFrameAt(Graphics2D g2, Point point, Consumer<FrameBox<T>> hoverConsumer) {
+    public void hoverFrameAt(Graphics2D g2, Point point, BiConsumer<FrameBox<T>, Rectangle> hoverConsumer) {
         getFrameAt(
                 g2,
                 point
         ).ifPresentOrElse(frame -> {
+                              var oldHoveredFrame = hoveredFrame;
                               hoveredFrame = frame;
                               if (hoverConsumer != null) {
-                                  hoverConsumer.accept(frame);
+                                  hoverConsumer.accept(frame, getFrameRectangle(g2, frame));
+                                  if (oldHoveredFrame != null) {
+                                      hoverConsumer.accept(oldHoveredFrame, getFrameRectangle(g2, oldHoveredFrame));
+                                  }
                               }
                           },
                           this::stopHover);
