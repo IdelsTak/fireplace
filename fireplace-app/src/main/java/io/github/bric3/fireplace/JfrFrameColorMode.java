@@ -16,69 +16,68 @@ import java.awt.*;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
-/**
- * A JFR specific color mapping modes.
- */
+/** A JFR specific color mapping modes. */
 public enum JfrFrameColorMode {
-    BY_PACKAGE {
-        final Pattern runtimePrefixes = Pattern.compile("(java\\.|javax\\.|sun\\.|com\\.sun\\.|com\\.oracle\\.|com\\.ibm\\.)");
+  BY_PACKAGE {
+    final Pattern runtimePrefixes =
+        Pattern.compile("(java\\.|javax\\.|sun\\.|com\\.sun\\.|com\\.oracle\\.|com\\.ibm\\.)");
 
-        @Override
-        public Color getColor(Function<Object, Color> colorMapper, Node frameNode) {
-            if (frameNode.isRoot()) {
-                return rootNodeColor;
-            }
-            var frame = frameNode.getFrame();
-            if (frame.getType() == Type.UNKNOWN) {
-                return undefinedColor;
-            }
+    @Override
+    public Color getColor(Function<Object, Color> colorMapper, Node frameNode) {
+      if (frameNode.isRoot()) {
+        return rootNodeColor;
+      }
+      var frame = frameNode.getFrame();
+      if (frame.getType() == Type.UNKNOWN) {
+        return undefinedColor;
+      }
 
-            var name = frame.getMethod().getType().getPackage().getName();
-            if (runtimePrefixes.matcher(name).lookingAt()) {
-                return runtimeColor;
-            }
-            return colorMapper.apply(name);
-        }
-    },
-    BY_MODULE {
-        @Override
-        public Color getColor(Function<Object, Color> colorMapper, Node frameNode) {
-            if (frameNode.isRoot()) {
-                return rootNodeColor;
-            }
-            return colorMapper.apply(frameNode.getFrame().getMethod().getType().getPackage().getModule());
-        }
-    },
-    BY_FRAME_TYPE {
-        @Override
-        public Color getColor(Function<Object, Color> colorMapper, Node frameNode) {
-            if (frameNode.isRoot()) {
-                return rootNodeColor;
-            }
-            switch (frameNode.getFrame().getType()) {
-                case INTERPRETED:
-                    return interpretedColor;
-                case INLINED:
-                    return inlinedColor;
-                case JIT_COMPILED:
-                    return jitCompiledColor;
-                case UNKNOWN:
-                default:
-                    return undefinedColor;
-            }
-        }
-    };
-
-    public static Color rootNodeColor = new Color(198, 198, 198);
-    public static Color runtimeColor = new Color(34, 107, 232);
-    public static Color undefinedColor = new Color(108, 163, 189);
-    public static Color jitCompiledColor = new Color(21, 110, 64);
-    public static Color inlinedColor = Color.pink;
-    public static Color interpretedColor = Color.orange;
-
-    protected abstract Color getColor(Function<Object, Color> colorMapper, Node frameNode);
-
-    public Function<Node, Color> colorMapperUsing(Function<Object, Color> colorMapper) {
-        return frameNode -> getColor(colorMapper, frameNode);
+      var name = frame.getMethod().getType().getPackage().getName();
+      if (runtimePrefixes.matcher(name).lookingAt()) {
+        return runtimeColor;
+      }
+      return colorMapper.apply(name);
     }
+  },
+  BY_MODULE {
+    @Override
+    public Color getColor(Function<Object, Color> colorMapper, Node frameNode) {
+      if (frameNode.isRoot()) {
+        return rootNodeColor;
+      }
+      return colorMapper.apply(frameNode.getFrame().getMethod().getType().getPackage().getModule());
+    }
+  },
+  BY_FRAME_TYPE {
+    @Override
+    public Color getColor(Function<Object, Color> colorMapper, Node frameNode) {
+      if (frameNode.isRoot()) {
+        return rootNodeColor;
+      }
+      switch (frameNode.getFrame().getType()) {
+        case INTERPRETED:
+          return interpretedColor;
+        case INLINED:
+          return inlinedColor;
+        case JIT_COMPILED:
+          return jitCompiledColor;
+        case UNKNOWN:
+        default:
+          return undefinedColor;
+      }
+    }
+  };
+
+  public static Color rootNodeColor = new Color(198, 198, 198);
+  public static Color runtimeColor = new Color(34, 107, 232);
+  public static Color undefinedColor = new Color(108, 163, 189);
+  public static Color jitCompiledColor = new Color(21, 110, 64);
+  public static Color inlinedColor = Color.pink;
+  public static Color interpretedColor = Color.orange;
+
+  protected abstract Color getColor(Function<Object, Color> colorMapper, Node frameNode);
+
+  public Function<Node, Color> colorMapperUsing(Function<Object, Color> colorMapper) {
+    return frameNode -> getColor(colorMapper, frameNode);
+  }
 }

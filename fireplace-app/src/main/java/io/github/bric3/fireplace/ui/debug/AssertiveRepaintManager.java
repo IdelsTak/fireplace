@@ -1,6 +1,6 @@
-// Copyright 2000-2020 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
+// Copyright 2000-2020 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0
+// license that can be found in the LICENSE file.
 package io.github.bric3.fireplace.ui.debug;
-
 
 import javax.swing.*;
 import java.applet.Applet;
@@ -124,12 +124,15 @@ public final class AssertiveRepaintManager extends RepaintManager {
       List<String> categories = Arrays.asList(categoriesString.split(","));
       if (shouldIgnoreStacktrace(categories, stackTrace)) return;
 
-      System.out.println("Access to realized (ever shown) UI components should be done only from the AWT event dispatch thread," +
-                         " revalidate(), invalidate() & repaint() is ok from any thread" + exception);
+      System.out.println(
+          "Access to realized (ever shown) UI components should be done only from the AWT event dispatch thread,"
+              + " revalidate(), invalidate() & repaint() is ok from any thread"
+              + exception);
     }
   }
 
-  private static boolean shouldIgnoreStacktrace(List<String> categories, StackTraceElement[] stackTrace) {
+  private static boolean shouldIgnoreStacktrace(
+      List<String> categories, StackTraceElement[] stackTrace) {
     if (categories.contains("none")) {
       return true;
     }
@@ -146,14 +149,15 @@ public final class AssertiveRepaintManager extends RepaintManager {
           return true;
         }
       } else if (element.getClassName().equals("com.intellij.serviceContainer.MyComponentAdapter")
-                 && element.getMethodName().equals("doCreateInstance")) {
+          && element.getMethodName().equals("doCreateInstance")) {
         if (all || categories.contains("component")) {
           categoryMatched = true;
           break;
         } else {
           return true;
         }
-      } else if (element.getClassName().equals("com.intellij.ui.CardLayoutPanel") && element.getMethodName().contains("selectLater")) {
+      } else if (element.getClassName().equals("com.intellij.ui.CardLayoutPanel")
+          && element.getMethodName().contains("selectLater")) {
         if (all || categories.contains("configurable")) {
           categoryMatched = true;
           break;
@@ -184,8 +188,9 @@ public final class AssertiveRepaintManager extends RepaintManager {
         swingKnownNonAwtOperations = true;
       }
 
-      if ("read".equals(methodName) && className.startsWith("javax.swing.JEditorPane") ||
-          "setCharacterAttributes".equals(methodName) && className.startsWith("javax.swing.text.DefaultStyledDocument")) {
+      if ("read".equals(methodName) && className.startsWith("javax.swing.JEditorPane")
+          || "setCharacterAttributes".equals(methodName)
+              && className.startsWith("javax.swing.text.DefaultStyledDocument")) {
         swingKnownNonAwtOperations = true;
         break;
       }
@@ -199,10 +204,10 @@ public final class AssertiveRepaintManager extends RepaintManager {
       return true;
     }
     if (repaint && !fromSwing) {
-      //no problems here, since repaint() is thread safe
+      // no problems here, since repaint() is thread safe
       return true;
     }
-    //ignore the last processed component
+    // ignore the last processed component
     if ((myLastComponent == null ? null : myLastComponent.get()) == c) {
       return true;
     }
