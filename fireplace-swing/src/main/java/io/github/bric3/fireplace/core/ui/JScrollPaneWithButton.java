@@ -68,6 +68,7 @@ public abstract class JScrollPaneWithButton {
             super.paintComponent(g2);
           }
 
+          @Override
           protected void paintBorder(Graphics g) {
             g.setColor(Colors.isDarkMode() ? Color.darkGray.brighter() : Color.darkGray);
             g.drawOval(0, 0, getWidth() - 1, getHeight() - 1);
