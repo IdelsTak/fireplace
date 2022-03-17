@@ -18,6 +18,8 @@ import java.awt.geom.Path2D;
 import java.awt.geom.RoundRectangle2D;
 
 public class BalloonToolTip extends JToolTip {
+
+  private static final long serialVersionUID = 1L;
   private transient HierarchyListener listener;
 
   @Override
