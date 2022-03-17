@@ -26,9 +26,10 @@ import java.util.function.Consumer;
 import static java.util.stream.Collectors.joining;
 
 public class FlameGraphTab extends JPanel {
-  private static final Palette defaultColorPalette = Palette.DATADOG;
-  private static final JfrFrameColorMode defaultFrameColorMode = JfrFrameColorMode.BY_PACKAGE;
-  private static final boolean defaultPaintFrameBorder = true;
+  private static final Palette DEFAULT_COLOR_PALETTE = Palette.DATADOG;
+  private static final JfrFrameColorMode DEFAULT_FRAME_COLOR_MODE = JfrFrameColorMode.BY_PACKAGE;
+  private static final boolean DEFAULT_PAINT_FRAME_BORDER = true;
+  private static final long serialVersionUID = 1L;
   private FlameGraph<Node> jfrFlameGraph;
   private Consumer<FlameGraph<Node>> dataApplier;
 
@@ -77,9 +78,9 @@ public class FlameGraphTab extends JPanel {
         });
 
     var colorPaletteJComboBox = new JComboBox<>(Palette.values());
-    colorPaletteJComboBox.setSelectedItem(defaultColorPalette);
+    colorPaletteJComboBox.setSelectedItem(DEFAULT_COLOR_PALETTE);
     var colorModeJComboBox = new JComboBox<>(JfrFrameColorMode.values());
-    colorModeJComboBox.setSelectedItem(defaultFrameColorMode);
+    colorModeJComboBox.setSelectedItem(DEFAULT_FRAME_COLOR_MODE);
 
     ActionListener actionListener =
         e -> {
@@ -99,7 +100,7 @@ public class FlameGraphTab extends JPanel {
           jfrFlameGraph.setFrameGapEnabled(borderToggle.isSelected());
           jfrFlameGraph.requestRepaint();
         });
-    borderToggle.setSelected(defaultPaintFrameBorder);
+    borderToggle.setSelected(DEFAULT_PAINT_FRAME_BORDER);
 
     var controlPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
     controlPanel.add(colorPaletteJComboBox);
@@ -136,8 +137,8 @@ public class FlameGraphTab extends JPanel {
                       .collect(joining(", "));
               return "all (" + events + ")";
             },
-            defaultFrameColorMode.colorMapperUsing(
-                ColorMapper.ofObjectHashUsing(defaultColorPalette.colors())),
+            DEFAULT_FRAME_COLOR_MODE.colorMapperUsing(
+                ColorMapper.ofObjectHashUsing(DEFAULT_COLOR_PALETTE.colors())),
             frame -> {
               if (frame.stackDepth == 0) {
                 return "";
